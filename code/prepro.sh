@@ -5,6 +5,9 @@ shen="../data/parcellation/shen/Shen_1mm_368_parcellation_resize.nii.gz"
 info="../data/parcellation/shen/area_index"
 values=($(cat $info))
 
+logfile="./log"
+touch $logfile
+cat /dev/null > $logfile
 fifolist="./fifolist"
 mkfifo $fifolist
 exec 8<>$fifolist
@@ -63,7 +66,8 @@ do
                 temp_mask="${outdir}/${rel_path}/${category}/temp_mask.nii.gz"
                 mkdir -p ../data/pre_results/$subject/$category/
                 timeseries="../data/pre_results/$subject/$category/timeseries"
-                rm $timeseries
+                touch $timeseries
+		cat /dev/null > $timeseries
                 # extract timeseries
                 for i in ${values[*]}
                 do
@@ -71,6 +75,11 @@ do
                     series=($(fslmeants -i $mcf_result -m $temp_mask))
                     echo ${series[*]} >> $timeseries
                 done
+		temp_cnt=`wc -l $timeseries`
+		if [ "$temp_cnt" != "368 $timeseries" ]
+		then
+			echo "$timeseries fails" >> $logfile
+		fi
                 #exit 0
             fi
         done

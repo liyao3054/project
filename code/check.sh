@@ -8,7 +8,7 @@ do
     do
         cont=`expr $cont + 1`
     done
-    if [ $cont != 7 ]
+    if [ $cont != 8 ]
     then
         echo $subject
     fi
